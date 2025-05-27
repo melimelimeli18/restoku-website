@@ -73,14 +73,14 @@
             </div>
         </div>
 
-        {{-- <button href="{{ route('sale.checkout') }}" type="submit" class="btn btn-success mt-4">Tambah ke Transaksi</button> --}}
+
+
         {{-- <button href="{{ route('sale.checkout') }}" class="btn btn-success mt-4">Tambah ke Transaksi</button> --}}
         <a href="{{ route('sale.checkout') }}" class="btn btn-primary mb-3">Tambah ke Transaksi</a>
     </form>
 </div>
 
 <script>
-    // Tambahkan efek seleksi saat card dipilih
     document.querySelectorAll('.selectable-card').forEach(card => {
         const checkbox = card.querySelector('input[type="checkbox"]');
         card.addEventListener('click', (e) => {

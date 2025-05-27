@@ -34,6 +34,7 @@
     <p>Harga Total: Rp25.000</p>
     <p>Pajak: Rp2.500</p>
     <p><strong>Jumlah Total: Rp27.500</strong></p>
+    <input type="datetime-local" name="" id=""> <br>
     <form action="{{ route('sale.checkout.process') }}" method="POST">
         @csrf
         ...

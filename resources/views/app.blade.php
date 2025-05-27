@@ -34,7 +34,6 @@
 
         <!-- Menu Cards -->
         <div class="row text-center">
-            {{-- @yield('content') --}}
             <div class="col-md-4 mb-3">
                 <a href="{{ route('sale.index') }}" class="card text-decoration-none text-dark shadow">
                     <div class="card-body">

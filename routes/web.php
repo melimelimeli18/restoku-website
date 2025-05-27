@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 //halaman utama
 Route::get('/', function () {
     return view('app');
-});
+})->name('app.home');
 
 //halaman sale kasir
 Route::get('/sale', function () {
