@@ -2,6 +2,8 @@
 
 // use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+// use App\Http\Controllers\ItemController;
+use App\Models\Item;
 
 
 //halaman utama
@@ -53,5 +55,34 @@ Route::get('/transactions', function () {
 
 //halaman item
 Route::get('/items', function () {
-    return view('items.index');
+    $items = Item::all();  // Ambil semua data dari database
+    return view('items.index', compact('items'));
 })->name('items.index');
+
+    //form tambah menu
+    Route::get('/create', function () {
+        return view('items.create');
+    })->name('items.create');
+
+    //simpan menu baru
+    Route::post('/items', function (Request $request) {
+        $request->validate([
+            'photo' => 'required|image|max:2048',
+            'name' => 'required|string|max:255',
+            'price' => 'required|integer|min:0',
+            'cost' => 'required|integer|min:0',
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $photoPath = $request->file('photo')->store('items', 'public');
+
+        Item::create([
+            'photo' => $photoPath,
+            'name' => $request->name,
+            'price' => $request->price,
+            'cost' => $request->cost,
+            'stock' => $request->stock,
+        ]);
+
+        return redirect()->route('items.index')->with('success', 'Menu berhasil ditambahkan!');
+    })->name('items.store');

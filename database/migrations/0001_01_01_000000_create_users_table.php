@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('restaurant_name'); 
+            $table->text('restaurant_address'); 
+            $table->string('restaurant_photo')->nullable(); 
+            
             $table->rememberToken();
             $table->timestamps();
         });

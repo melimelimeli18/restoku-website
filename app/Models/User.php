@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'restaurant_name', 
+        'restaurant_adress',
+        'restaurant_photo'
     ];
 
     /**
@@ -33,6 +36,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // enkripsi
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->password = Hash::make($user->password);  // Hash password
+        });
+    }
+    
     /**
      * Get the attributes that should be cast.
      *
