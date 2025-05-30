@@ -32,6 +32,8 @@
             </div>
         </div>
 
+        {{-- <h2>Selamat datang di Home, {{ Auth::user()->restaurant_name }}!</h2> --}}
+
         <!-- Menu Cards -->
         <div class="row text-center">
             <div class="col-md-4 mb-3">
@@ -59,6 +61,11 @@
                 </a>
             </div>
         </div>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

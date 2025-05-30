@@ -11,26 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Membuat tabel 'users' pertama kali
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('restaurant_name'); 
-            $table->text('restaurant_address'); 
-            $table->string('restaurant_photo')->nullable(); 
-            
+            $table->string('restaurant_name')->nullable();  // kolom baru
+            $table->text('restaurant_address')->nullable();  // kolom baru
+            $table->string('restaurant_photo')->nullable();  // kolom baru
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // Membuat tabel 'password_reset_tokens'
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // Membuat tabel 'sessions'
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -39,6 +41,11 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        // Menambahkan kolom baru di tabel 'users'
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('restaurant_number')->nullable(); // Kolom baru
+        });
     }
 
     /**
@@ -46,6 +53,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Menghapus tabel jika diperlukan rollback
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

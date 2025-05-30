@@ -2,14 +2,34 @@
 
 // use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 // use App\Http\Controllers\ItemController;
 use App\Models\Item;
 
 
-//halaman utama
+
+//AUTH
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/signup', function () {
+    return view('auth.signup');
+})->name('signup');
+
+Route::post('/signup', [AuthController::class, 'signup']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+
+//HALAMAN UTAMA
 Route::get('/', function () {
     return view('app');
-})->name('app.home');
+})->name('app.home')->middleware('auth');
+// })->name('app.home');
 
 //halaman sale kasir
 Route::get('/sale', function () {
