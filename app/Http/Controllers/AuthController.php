@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use app\Models\User;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-// use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    //sign up
+//sign up
     public function signup(Request $request)
     {
         try{
@@ -20,11 +20,16 @@ class AuthController extends Controller
             // Validasi form
             $request->validate([
                 'restaurant_name' => 'required|string|max:255',
+                'restaurant_number' => 'required|numeric',
                 'restaurant_address' => 'required|string',
                 'restaurant_photo' => 'nullable|image|max:2048', // Validasi foto
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|confirmed|min:8',
+                
             ]);
+
+            \Log::info('Password before hashing: ', ['password' => $request->password]);
+
     
             // Jika ada foto yang di-upload
             // if ($request->hasFile('restaurant_photo')) {
@@ -34,12 +39,15 @@ class AuthController extends Controller
             //     $photoPath = null;  // Jika tidak ada foto, maka set null
             // }
     
+            // Bersihkan nomor resto untuk memastikan hanya angka yang diterima
+            $restaurantNumber = preg_replace('/\D/', '', $request->restaurant_number);
             // Simpan data user ke database
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),  // Meng-hash password
+                'password' => $request->password,  // Meng-hash password
                 'restaurant_name' => $request->restaurant_name,
+                'restaurant_number' => $restaurantNumber,
                 'restaurant_address' => $request->restaurant_address,
                 // 'restaurant_photo' => $photoPath,  // Simpan nama file foto di database
             ]);
@@ -48,8 +56,6 @@ class AuthController extends Controller
     
             // Auto-login user setelah signup
             Auth::login($user);
-    
-            // Redirect ke halaman home setelah berhasil signup
             return redirect()->route('app.home');  
         } catch (\Exception $e) {
             dd($e->getMessage());
@@ -59,21 +65,80 @@ class AuthController extends Controller
 
 
     // Login pengguna
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         // Validasi form login
+    //         $request->validate([
+    //             'email' => 'required|email',
+    //             'password' => 'required|min:8',
+    //         ]);
+
+    //         \Log::info('Login attempt', $request->only('email', 'password'));
+
+    //         // Cek user apakah ada di database
+    //         $user = User::where('email', $request->email)->first();
+
+    //         if (!$user) {
+    //             \Log::info('User not found: ' . $request->email);
+    //             return back()->withErrors(['email' => 'User not found']);
+    //         }
+
+    //         $passwordCorrect = Hash::check(trim($request->password), $user->password);
+    //         if ($passwordCorrect) {
+    //             \Log::info('Password correct for: ' . $request->email);
+    //             // Proses login
+    //             Auth::login($user);
+
+    //             // Cek status session
+    //             if (Auth::check()) {
+    //                 \Log::info('Session created successfully for: ', ['user' => Auth::user()]);
+    //             } else {
+    //                 \Log::info('Failed to create session for: ', ['email' => $request->email]);
+    //             }
+
+    //             return redirect()->route('app.home');
+    //         } else {
+    //             \Log::info('Password mismatch for: ' . $request->email);
+    //             return back()->withErrors(['email' => 'Invalid credentials']);
+    //         }
+
+    //     } catch (\Exception $e) {
+    //         // Tangkap error dan tampilkan pesan
+    //         \Log::error('Login failed: ' . $e->getMessage());
+    //         dd('Error during login: ' . $e->getMessage());  // Menampilkan pesan error di browser
+    //     }
+    // }
+
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
+        $user = User::where('email', $request->input('email'))->first();
+        \Log::info('==================================================');
+        \Log::info('User login: ', ['user' => $user]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            // Setelah login berhasil, arahkan ke halaman home
-            return redirect()->route('home');  // Ganti 'home' dengan route yang sesuai
+        if ($user) {
+            \Log::info('Stored password hash: ', ['password' => $user->password]);
+
+            $passwordCorrect = Hash::check($request->input('password'), $user->password);
+            \Log::info('Password verification result for ' . $request->email . ': ', ['result' => $passwordCorrect]);
+
+            if ($passwordCorrect) {
+                // Password is correct
+                \Log::info('Password correct for: ' . $request->email);
+                Auth::login($user);
+                return redirect()->route('app.home');
+            } else {
+                \Log::info('Password mismatch for: ' . $request->email);
+                return back()->withErrors(['email' => 'Invalid credentials']);
+            }
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials']);
+        \Log::info('User not found for email: ' . $request->email);
+        return back()->withErrors(['email' => 'User not found']);
     }
 
+
+    
     // Logout pengguna
     public function logout()
     {
@@ -81,5 +146,12 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
+    
 
 }
+
+// $passwordCorrect = '$2y$12$4/LcGqEytYUlcjvklKa2vO7GtJnOAbPFx63IPaFim4EUV9SpPjkBS';
+$user = 'melisaolivia18@gmail.com';
+$passwordCorrect = $user->password;
+echo($passwordCorrect);
+    

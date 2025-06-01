@@ -34,7 +34,7 @@
 
         <div class="mb-3">
             <label for="restaurant_number" class="form-label">Nomor Resto</label>
-            <input type="number" name="restaurant_number" id="restaurant_number" class="form-control" required>
+            <input type="number" name="restaurant_number" id="restaurant_number" class="form-control" required step="1">
         </div>
 
         <div class="mb-3">
@@ -53,7 +53,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">Password (at least 8 charather)</label>
             <input type="password" name="password" id="password" class="form-control" required>
         </div>
 
