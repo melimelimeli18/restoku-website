@@ -27,11 +27,6 @@
             <input type="number" name="price" id="price" class="form-control" min="0" required>
         </div>
 
-        <div class="mb-3">
-            <label for="cost" class="form-label">Cost</label>
-            <input type="number" name="cost" id="cost" class="form-control" min="0" required>
-        </div>
-
     <div class="mb-3">
         <label for="stock" class="form-label">Stock</label>
         <input type="number" name="stock" id="stock" class="form-control" min="0" required>

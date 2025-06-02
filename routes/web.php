@@ -3,9 +3,8 @@
 // use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\ItemController;
 use App\Models\Item;
-
+use App\Http\Controllers\ItemController;
 
 
 //AUTH
@@ -84,25 +83,17 @@ Route::get('/items', function () {
         return view('items.create');
     })->name('items.create');
 
-    //simpan menu baru
-    Route::post('/items', function (Request $request) {
-        $request->validate([
-            'photo' => 'required|image|max:2048',
-            'name' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
-            'cost' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-        ]);
+   // Rute untuk menampilkan form create
+    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
 
-        $photoPath = $request->file('photo')->store('items', 'public');
+    // Rute untuk menyimpan item
+    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
 
-        Item::create([
-            'photo' => $photoPath,
-            'name' => $request->name,
-            'price' => $request->price,
-            'cost' => $request->cost,
-            'stock' => $request->stock,
-        ]);
+    //form edit
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
 
-        return redirect()->route('items.index')->with('success', 'Menu berhasil ditambahkan!');
-    })->name('items.store');
+    // Update data item
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+
+    // Delete item
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
