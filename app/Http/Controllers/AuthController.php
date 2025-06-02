@@ -154,4 +154,4 @@ class AuthController extends Controller
 $user = 'melisaolivia18@gmail.com';
 $passwordCorrect = $user->password;
 echo($passwordCorrect);
-    
+        

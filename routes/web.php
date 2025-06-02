@@ -9,27 +9,27 @@ use App\Models\Item;
 
 
 //AUTH
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// Route::get('/login', function () {
+//     return view('auth.login');
+// })->name('login');
 
-Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/signup', function () {
-    return view('auth.signup');
-})->name('signup');
+// Route::get('/signup', function () {
+//     return view('auth.signup');
+// })->name('signup');
 
-Route::post('/signup', [AuthController::class, 'signup']);
+// Route::post('/signup', [AuthController::class, 'signup']);
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 
 //HALAMAN UTAMA
 Route::get('/', function () {
     return view('app');
-})->name('app.home')->middleware('auth');
-// })->name('app.home');
+// })->name('app.home')->middleware('auth');
+})->name('app.home');
 
 //halaman sale kasir
 Route::get('/sale', function () {
