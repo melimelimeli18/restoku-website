@@ -31,9 +31,10 @@ Route::get('/', function () {
 })->name('app.home');
 
 //halaman sale kasir
-Route::get('/sale', function () {
-    return view('sale.index');
-})->name('sale.index');
+// Route::get('/sale', function () {
+//     return view('sale.index');
+// })->name('sale.index');
+Route::get('/sale', [ItemController::class, 'saleIndex'])->name('sale.index');
 
     // Halaman checkout setelah pilih item
     Route::get('/sale/checkout', function () {
@@ -73,11 +74,11 @@ Route::get('/transactions', function () {
 
 
 //halaman item
-Route::get('/items', function () {
-    $items = Item::all();  // Ambil semua data dari database
-    return view('items.index', compact('items'));
-})->name('items.index');
-
+// Route::get('/items', function () {
+//     $items = Item::all();  // Ambil semua data dari database
+//     return view('items.index', compact('items'));
+// })->name('items.index');
+Route::get('/items', [ItemController::class, 'itemsIndex'])->name('items.index');
     //form tambah menu
     Route::get('/create', function () {
         return view('items.create');

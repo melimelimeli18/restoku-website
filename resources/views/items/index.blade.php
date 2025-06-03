@@ -10,6 +10,8 @@
 <div class="container mt-4">
     <h2>Daftar Menu</h2>
     <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Tambah Menu</a>
+    <a href="{{ route('app.home') }}" class="btn btn-secondary mb-3">Home</a>
+
 
     @if($items->isEmpty())
         <div class="alert alert-info">Menu masih kosong.</div>
