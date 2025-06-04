@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <title>Pilih Item Penjualan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
+        /* Styles for card, badge, etc. (sama seperti sebelumnya) */
         .selectable-card {
             cursor: pointer;
             position: relative;
@@ -18,7 +20,10 @@
             background-color: #e9f3ff;
         }
         .item-img {
-            width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 0.5rem;
         }
         .badge-amount {
             position: absolute;
@@ -40,29 +45,22 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h2> Halaman Penjualan</h2>
+    <h2>Halaman Penjualan</h2>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('app.home') }}" class="btn btn-secondary">Home</a>
-        <div id="transaction-area">
-            <!-- Dinamis: nanti tombol CTA atau tombol proses transaksi -->
-            <div class="alert alert-warning m-0" id="alert-no-items">Tambahkan item terlebih dahulu</div>
-            <button class="btn btn-success d-none" id="btn-process">Proses Transaksi Rp <span id="total-price">0</span></button>
-        </div>
-    </div>
-
-    <div class="row g-3">
-        @foreach($items as $item)
+    <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}">
+        @csrf
+        <div class="row g-3">
+            @foreach($items as $item)
             <div class="col-md-4">
-                <div class="card selectable-card" 
-                    data-id="{{ $item->id }}" 
-                    data-name="{{ $item->name }}" 
-                    data-price="{{ $item->price }}"
-                    >
+                <div class="card selectable-card"
+                     data-id="{{ $item->id }}"
+                     data-name="{{ $item->name }}"
+                     data-price="{{ $item->price }}">
                     @if($item->photo)
                         <img src="{{ asset('storage/' . $item->photo) }}" alt="{{ $item->name }}" class="item-img me-3" />
                     @else
-                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width:60px; height:60px; border-radius:0.5rem;">
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center me-3"
+                             style="width:60px; height:60px; border-radius:0.5rem;">
                             No Photo
                         </div>
                     @endif
@@ -73,11 +71,22 @@
                     <div class="badge-amount d-none" id="badge-amount-{{ $item->id }}">0</div>
                 </div>
             </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
+
+        <!-- Hidden inputs untuk items dan quantity -->
+        <div id="hiddenInputsContainer"></div>
+
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+            <div id="alert-no-items" class="alert alert-warning m-0">Tambahkan item terlebih dahulu</div>
+            <button type="submit" class="btn btn-success d-none" id="btn-process">
+                Proses Transaksi Rp <span id="total-price">0</span>
+            </button>
+        </div>
+    </form>
 </div>
 
-<!-- Modal untuk input jumlah -->
+<!-- Modal jumlah item (sama seperti sebelumnya) -->
 <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 35%;">
         <div class="modal-content p-3">
@@ -89,11 +98,11 @@
                 <p id="modalItemName" class="fw-bold fs-5"></p>
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <button type="button" class="btn btn-outline-primary" id="btnMinus">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M3.5 8a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5z"/></svg>
+                        <!-- SVG minus icon -->
                     </button>
                     <input type="text" id="quantityInput" class="form-control text-center" value="1" style="width: 60px;" readonly />
                     <button type="button" class="btn btn-outline-primary" id="btnPlus">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                        <!-- SVG plus icon -->
                     </button>
                 </div>
                 <p>Harga per item: <span id="modalItemPrice"></span></p>
@@ -132,7 +141,6 @@
             return total + price * qty;
         }, 0);
 
-        const transactionArea = document.getElementById('transaction-area');
         const alertNoItems = document.getElementById('alert-no-items');
         const btnProcess = document.getElementById('btn-process');
         const totalPriceSpan = document.getElementById('total-price');
@@ -144,6 +152,27 @@
             alertNoItems.classList.add('d-none');
             btnProcess.classList.remove('d-none');
             totalPriceSpan.textContent = totalPrice.toLocaleString('id-ID');
+        }
+    }
+
+    function updateHiddenInputs() {
+        const container = document.getElementById('hiddenInputsContainer');
+        container.innerHTML = ''; // kosongkan dulu
+
+        for (const [id, qty] of Object.entries(selectedItems)) {
+            // input item id
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'items[]';
+            inputId.value = id;
+            container.appendChild(inputId);
+
+            // input qty
+            const inputQty = document.createElement('input');
+            inputQty.type = 'hidden';
+            inputQty.name = `quantity[${id}]`;
+            inputQty.value = qty;
+            container.appendChild(inputQty);
         }
     }
 
@@ -186,39 +215,47 @@
             alert('Pilih item terlebih dahulu!');
             return;
         }
-        // Simpan jumlah ke selectedItems
         selectedItems[selectedItemId] = quantity;
 
-        // Update badge jumlah di card
         const badge = document.getElementById(`badge-amount-${selectedItemId}`);
         badge.textContent = quantity;
         badge.classList.remove('d-none');
 
-        // Update total transaksi dan tombol
+        updateHiddenInputs();
         updateTransactionArea();
 
         modal.hide();
     });
 
-    // Aksi tombol proses transaksi
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    fetch('/sale/checkout', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken  // CSRF Token di header
+    },
+    body: JSON.stringify({
+        items: selectedItems,
+        total_price: totalPrice
+    })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Transaction Success', data))
+    .catch(error => console.error('Error:', error));
+
+    // Saat tombol proses transaksi ditekan
     document.getElementById('btn-process').addEventListener('click', () => {
         // Buat form POST dinamis dan submit ke halaman checkout
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '{{ route("sale.checkout.process") }}';
 
-        // Tambahkan CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if(csrfToken) {
-            const inputCsrf = document.createElement('input');
-            inputCsrf.type = 'hidden';
-            inputCsrf.name = '_token';
-            inputCsrf.value = csrfToken;
-            form.appendChild(inputCsrf);
-        }
+        // Tambahkan CSRF token ke dalam form
+        form.appendChild(csrfTokenInput(csrfToken));
 
         // Tambahkan input item id dan jumlah
-        for(const [id, qty] of Object.entries(selectedItems)) {
+        for (const [id, qty] of Object.entries(selectedItems)) {
             // Item ID
             const inputId = document.createElement('input');
             inputId.type = 'hidden';
@@ -234,9 +271,11 @@
             form.appendChild(inputQty);
         }
 
+        // Submit form ke halaman checkout
         document.body.appendChild(form);
         form.submit();
     });
+
 </script>
 </body>
 </html>

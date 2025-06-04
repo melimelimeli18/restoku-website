@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Models\Item;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\SaleController;
 
 
 //AUTH
@@ -30,44 +31,29 @@ Route::get('/', function () {
 // })->name('app.home')->middleware('auth');
 })->name('app.home');
 
-//halaman sale kasir
-// Route::get('/sale', function () {
-//     return view('sale.index');
-// })->name('sale.index');
-Route::get('/sale', [ItemController::class, 'saleIndex'])->name('sale.index');
 
-    // Halaman checkout setelah pilih item
-    Route::get('/sale/checkout', function () {
-        return view('sale.checkout');
-    })->name('sale.checkout');
-    
-    //process
-    Route::post('/sale/checkout/process', function (Request $request) {
-        \Log::info('Data request:', $request->all());
-        $paymentMethod = $request->payment_method;
 
-        if ($paymentMethod === 'qris') {
-            return redirect()->route('sale.payment.qris');
-        } elseif ($paymentMethod === 'bca' || $paymentMethod === 'bri') {
-            return redirect()->route('sale.payment.va', ['bank' => $paymentMethod]);
-        }
+//SALEEEE
+Route::get('/sale', [SaleController::class, 'index'])->name('sale.index'); // Halaman pilih item (index)
 
-        return redirect()->route('sale.checkout'); // fallback
-    })->name('sale.checkout.process');
+Route::post('/sale/checkout', [SaleController::class, 'checkout'])->name('sale.checkout'); // Terima data item & qty, tampilkan checkout
 
-    Route::get('/sale/payment/qris', function () {
-        return view('sale.payment_qris');
-    })->name('sale.payment.qris');
+Route::post('/sale/checkout/process', [SaleController::class, 'checkoutProcess'])->name('sale.checkout.process'); // Simpan transaksi dan redirect pembayaran
 
-    Route::get('/sale/payment/va/{bank}', function ($bank) {
-        return view('sale.payment_va', ['bank' => $bank]);
-    })->name('sale.payment.va');
+Route::get('/sale/payment/qris', function () {
+    return view('sale.payment_qris');
+})->name('sale.payment.qris');
 
-    Route::get('/sale/payment/success', function () {
-        return view('sale.payment_success');
-    })->name('sale.payment.success');
+Route::get('/sale/payment/va/{bank}', function ($bank) {
+    return view('sale.payment_va', ['bank' => $bank]);
+})->name('sale.payment.va');
 
-//halaman riwayat transaksi
+Route::get('/sale/payment/success', function () {
+    return view('sale.payment_success');
+})->name('sale.payment.success');
+
+
+//RIWAYATTT TRANSAKSIII
 Route::get('/transactions', function () {
     return view('transactions.index');
 })->name('transactions.index');
