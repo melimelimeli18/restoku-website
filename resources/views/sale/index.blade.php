@@ -47,7 +47,8 @@
 <div class="container mt-4">
     <h2>Halaman Penjualan</h2>
 
-    <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}">
+    {{-- <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}"> --}}
+    <form id="transactionForm" method="POST" action="{{ route('sale.checkout.process') }}">
         @csrf
         <div class="row g-3">
             @foreach($items as $item)
@@ -99,10 +100,16 @@
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <button type="button" class="btn btn-outline-primary" id="btnMinus">
                         <!-- SVG minus icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="2" viewBox="0 0 14 2" fill="none">
+                            <path d="M13 1.99805H1C0.734784 1.99805 0.48043 1.89269 0.292893 1.70515C0.105357 1.51762 0 1.26326 0 0.998047C0 0.73283 0.105357 0.478477 0.292893 0.29094C0.48043 0.103404 0.734784 -0.00195312 1 -0.00195312H13C13.2652 -0.00195312 13.5196 0.103404 13.7071 0.29094C13.8946 0.478477 14 0.73283 14 0.998047C14 1.26326 13.8946 1.51762 13.7071 1.70515C13.5196 1.89269 13.2652 1.99805 13 1.99805Z" fill="black"/>
+                        </svg>
                     </button>
                     <input type="text" id="quantityInput" class="form-control text-center" value="1" style="width: 60px;" readonly />
                     <button type="button" class="btn btn-outline-primary" id="btnPlus">
                         <!-- SVG plus icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M19 12.998H13V18.998H11V12.998H5V10.998H11V4.99805H13V10.998H19V12.998Z" fill="black"/>
+                        </svg>
                     </button>
                 </div>
                 <p>Harga per item: <span id="modalItemPrice"></span></p>
@@ -228,53 +235,93 @@
     });
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-    fetch('/sale/checkout', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken  // CSRF Token di header
-    },
-    body: JSON.stringify({
-        items: selectedItems,
-        total_price: totalPrice
-    })
+   
+    // fetch('/sale/checkout', {
+    fetch('/sale/checkout.process', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken  // CSRF Token di header
+        },
+        // body: JSON.stringify({
+        //     items: selectedItems,
+        //     total_price: totalPrice
+        // })
+        body: JSON.stringify(formData)
     })
     .then(response => response.json())
     .then(data => console.log('Transaction Success', data))
     .catch(error => console.error('Error:', error));
 
-    // Saat tombol proses transaksi ditekan
-    document.getElementById('btn-process').addEventListener('click', () => {
-        // Buat form POST dinamis dan submit ke halaman checkout
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("sale.checkout.process") }}';
+    // Ketika proses transaksi dimulai
+    // document.getElementById('btn-process').addEventListener('click', () => {
+    //     const form = document.createElement('form');
+    //     form.method = 'POST';
+    //     form.action = '{{ route("sale.checkout.process") }}';
 
-        // Tambahkan CSRF token ke dalam form
-        form.appendChild(csrfTokenInput(csrfToken));
+    //     // Tambahkan CSRF token ke dalam form
+    //     // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    //     // form.appendChild(csrfTokenInput(csrfToken));
 
-        // Tambahkan input item id dan jumlah
-        for (const [id, qty] of Object.entries(selectedItems)) {
-            // Item ID
-            const inputId = document.createElement('input');
-            inputId.type = 'hidden';
-            inputId.name = 'items[]';
-            inputId.value = id;
-            form.appendChild(inputId);
+    //     // Tambahkan input item id dan jumlah
+    //     for (const [id, qty] of Object.entries(selectedItems)) {
+    //         // Item ID
+    //         const inputId = document.createElement('input');
+    //         inputId.type = 'hidden';
+    //         inputId.name = 'items[]';  // Menjaga array dengan nama yang sesuai
+    //         inputId.value = id;
+    //         form.appendChild(inputId);
 
-            // Quantity
-            const inputQty = document.createElement('input');
-            inputQty.type = 'hidden';
-            inputQty.name = `quantity[${id}]`;
-            inputQty.value = qty;
-            form.appendChild(inputQty);
-        }
+    //         // Quantity
+    //         const inputQty = document.createElement('input');
+    //         inputQty.type = 'hidden';
+    //         // inputQty.name = 'quantity[]';  // Menjaga array dengan nama yang sesuai
+    //         inputQty.name = 'quantity[${id}]';  // Menjaga array dengan nama yang sesuai
+    //         inputQty.value = qty;
+    //         form.appendChild(inputQty);
+    //     }
 
-        // Submit form ke halaman checkout
-        document.body.appendChild(form);
-        form.submit();
-    });
+    //     document.body.appendChild(form);
+    //     form.submit();
+    // });
+    
+    // Mengirim data items dan quantity secara dinamis melalui form
+btnProcess.addEventListener('click', () => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("sale.checkout.process") }}';
+
+    // Tambahkan CSRF token ke dalam form
+    const csrfTokenInput = document.createElement('input');
+    csrfTokenInput.type = 'hidden';
+    csrfTokenInput.name = '_token';
+    csrfTokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    form.appendChild(csrfTokenInput);
+
+    // Kirim item id dan quantity melalui input hidden
+    for (const [id, qty] of Object.entries(selectedItems)) {
+        // Kirim item ID
+        const inputId = document.createElement('input');
+        inputId.type = 'hidden';
+        inputId.name = 'items[]';  // Menjaga array dengan nama yang sesuai
+        inputId.value = id;
+        form.appendChild(inputId);
+
+        // Kirim quantity
+        const inputQty = document.createElement('input');
+        inputQty.type = 'hidden';
+        inputQty.name = 'quantity[]';  // Menjaga array dengan nama yang sesuai
+        inputQty.value = qty;
+        form.appendChild(inputQty);
+    }
+
+    // Kirim form
+    document.body.appendChild(form);
+    form.submit();
+});
+
+
+
 
 </script>
 </body>

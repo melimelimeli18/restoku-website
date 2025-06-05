@@ -36,7 +36,7 @@ Route::get('/', function () {
 //SALEEEE
 Route::get('/sale', [SaleController::class, 'index'])->name('sale.index'); // Halaman pilih item (index)
 
-Route::post('/sale/checkout', [SaleController::class, 'checkout'])->name('sale.checkout'); // Terima data item & qty, tampilkan checkout
+// Route::post('/sale/checkout', [SaleController::class, 'checkout'])->name('sale.checkout'); // Terima data item & qty, tampilkan checkout
 
 Route::post('/sale/checkout/process', [SaleController::class, 'checkoutProcess'])->name('sale.checkout.process'); // Simpan transaksi dan redirect pembayaran
 
