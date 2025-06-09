@@ -17,8 +17,8 @@ class Sale extends Model
     ];
 
     // Konversi `items` ke dalam array saat diambil
-    protected $casts = [
-        'items' => 'array',  // Mengkonversi JSON ke array
-        'sale_date' => 'datetime',
-    ];
+    // protected $casts = [
+    //     'items' => 'array',  // Mengkonversi JSON ke array
+    //     'sale_date' => 'datetime',
+    // ];
 }

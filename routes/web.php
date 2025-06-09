@@ -19,8 +19,14 @@ Route::get('/', function () {
 Route::get('/sale', [SaleController::class, 'index'])->name('sale.index'); // Halaman pilih item (index)
 
 // Route::post('/sale/checkout', [SaleController::class, 'checkoutProcess'])->name('sale.checkout');
-Route::post('checkout-process', [SaleController::class, 'checkoutProcess'])->name('checkout.process');
-Route::get('/sale/checkout', [SaleController::class, 'checkoutPage'])->name('sale.checkout');
+// Route::post('checkout-process', [SaleController::class, 'checkoutProcess'])->name('checkout.process');
+// Route::get('/sale/checkout', [SaleController::class, 'checkoutPage'])->name('sale.checkout');
+// web.php
+
+Route::post('/sale/checkout', [SaleController::class, 'checkoutProcess'])->name('sale.checkout');  // Proses checkout, simpan data di session
+Route::get('/sale/checkout', [SaleController::class, 'showCheckoutPage'])->name('sale.checkout.page');  // Menampilkan halaman checkout dengan data dari session
+Route::post('/sale/submit', [SaleController::class, 'submit'])->name('sale.submit');
+
 
 Route::get('/sale/payment/qris', function () {
     return view('sale.payment_qris');

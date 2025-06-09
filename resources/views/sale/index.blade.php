@@ -47,9 +47,8 @@
 <div class="container mt-4">
     <h2>Halaman Penjualan</h2>
 
-   <form id="transactionForm" method="POST" action="{{ route('checkout.process') }}">
-   {{-- <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}"> --}}
-    @csrf
+    <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}"> 
+        @csrf
         <div class="row g-3">
             @foreach($items as $item)
             <div class="col-md-4">
@@ -85,6 +84,7 @@
             </button>
         </div>
     </form>
+
 </div>
 
 <!-- Modal jumlah item (sama seperti sebelumnya) -->
@@ -166,22 +166,24 @@
         const container = document.getElementById('hiddenInputsContainer');
         container.innerHTML = ''; // kosongkan dulu
 
+        // Mengirimkan data items dan quantity
         for (const [id, qty] of Object.entries(selectedItems)) {
             // input item id
             const inputId = document.createElement('input');
             inputId.type = 'hidden';
-            inputId.name = 'items[]';
+            inputId.name = 'items[]';  // Menyimpan item ke dalam array
             inputId.value = id;
             container.appendChild(inputId);
 
             // input qty
             const inputQty = document.createElement('input');
             inputQty.type = 'hidden';
-            inputQty.name = `quantity[${id}]`;
+            inputQty.name = `quantity[${id}]`;  // Mengirimkan quantity dengan ID item
             inputQty.value = qty;
             container.appendChild(inputQty);
         }
     }
+
 
     cards.forEach(card => {
         card.addEventListener('click', () => {
@@ -234,48 +236,6 @@
         modal.hide();
     });
     
-        
-
-const btnProcess = document.getElementById('btn-process');
-
-btnProcess.addEventListener('click', () => {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    // form.action = '{{ route("sale.checkout") }}';
-    form.action = '{{ route("checkout.process") }}';
-
-    // Tambahkan CSRF token ke dalam form
-    const csrfTokenInput = document.createElement('input');
-    csrfTokenInput.type = 'hidden';
-    csrfTokenInput.name = '_token';
-    csrfTokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    form.appendChild(csrfTokenInput);
-
-    // Kirim item id dan quantity melalui input hidden
-    for (const [id, qty] of Object.entries(selectedItems)) {
-        // Kirim item ID
-        const inputId = document.createElement('input');
-        inputId.type = 'hidden';
-        inputId.name = 'items[]';  // Menjaga array dengan nama yang sesuai
-        inputId.value = id;
-        form.appendChild(inputId);
-
-        // Kirim quantity
-        const inputQty = document.createElement('input');
-        inputQty.type = 'hidden';
-        inputQty.name = 'quantity[]';  // Menjaga array dengan nama yang sesuai
-        inputQty.value = qty;
-        form.appendChild(inputQty);
-    }
-
-    // Kirim form
-    document.body.appendChild(form);
-    form.submit();
-});
-
-
-
-
 </script>
 </body>
 </html>
