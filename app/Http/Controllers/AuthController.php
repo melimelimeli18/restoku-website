@@ -101,8 +101,3 @@ class AuthController extends Controller
 
 }
 
-// $passwordCorrect = '$2y$12$4/LcGqEytYUlcjvklKa2vO7GtJnOAbPFx63IPaFim4EUV9SpPjkBS';
-//$user = 'melisaolivia18@gmail.com';
-//$passwordCorrect = $user->password;
-//echo($passwordCorrect);
-    

@@ -9,8 +9,9 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h2>Riwayat Transaksi</h2>
-
+    <h2>Riwayat Transaksi</h2> 
+    <a href="{{ route('app.home') }}" class="btn btn-secondary mb-3">Home</a>
+    
     {{-- Simulasi data --}}
     <h5 class="mt-4">Senin, 27 Mei 2025</h5>
 

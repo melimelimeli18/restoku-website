@@ -1,51 +1,85 @@
+@php
+    // Ambil data dari session
+    $checkoutData = session('checkout_data');
+    $itemsData = $checkoutData['itemsData'] ?? [];
+    $totalPrice = $checkoutData['totalPrice'] ?? 0;
+    $tax = $checkoutData['tax'] ?? 0;
+    $grandTotal = $checkoutData['grandTotal'] ?? 0;
+    $items = $checkoutData['items'] ?? [];
+    $quantities = $checkoutData['quantities'] ?? [];
+@endphp
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Pembayaran</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>Checkout Penjualan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
-<div class="container mt-4">
-    <h2 class="mb-4">Halaman Pembayaran</h2>
+    <div class="container mt-4">
+        <h2>Halaman Checkout</h2>
 
-<form action="{{ route('sale.checkout.process') }}" method="POST">
-    @csrf
-    <div class="mb-3">
-        <label>Nama Pelanggan</label>
-        <input type="text" name="customer_name" class="form-control" required>
-    </div>
+        <form action="{{ route('sale.submit') }}" method="POST">
+            @csrf
 
-    <div class="mb-3">
-        <label>Jenis Kelamin</label><br>
-        <input type="radio" name="gender" value="Laki-laki" required> Laki-laki
-        <input type="radio" name="gender" value="Perempuan"> Perempuan
-    </div>
+            <h4>Detail Item</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nama Item</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($itemsData as $item)
+                        <tr>
+                            <td>{{ $item['name'] }}</td>
+                            <td>Rp {{ number_format($item['price'], 0, ',', '.') }}</td>
+                            <td>{{ $item['quantity'] }}</td>
+                            <td>Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</td>
+                            <!-- Hidden inputs untuk kirim ulang data ke controller -->
+                            <input type="hidden" name="items[{{ $loop->index }}][id]" value="{{ $item['id'] }}">
+                            <input type="hidden" name="items[{{ $loop->index }}][quantity]" value="{{ $item['quantity'] }}">
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-    <!-- Simulasi item -->
-    <h5>Item yang Dipilih:</h5>
-    <ul>
-        <li>Nasi Goreng - Rp20.000</li>
-        <li>Teh Manis - Rp5.000</li>
-    </ul>
+            <p>Total Harga: Rp {{ number_format($totalPrice, 0, ',', '.') }}</p>
+            <p>Pajak (10%): Rp {{ number_format($tax, 0, ',', '.') }}</p>
+            <p><strong>Grand Total: Rp {{ number_format($grandTotal, 0, ',', '.') }}</strong></p>
 
-    <p>Harga Total: Rp25.000</p>
-    <p>Pajak: Rp2.500</p>
-    <p><strong>Jumlah Total: Rp27.500</strong></p>
-    <input type="datetime-local" name="" id=""> <br>
-    <form action="{{ route('sale.checkout.process') }}" method="POST">
-        @csrf
-        ...
-        <input type="radio" name="payment_method" value="qris" required> QRIS<br>
-        <input type="radio" name="payment_method" value="bca"> Virtual Account BCA<br>
-        <input type="radio" name="payment_method" value="bri"> Virtual Account BRI
-        <button type="submit" class="btn btn-success">Bayar Sekarang</button>
-        ...
+
+            <!-- Kirim data total harga ke controller -->
+            <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+            <input type="hidden" name="tax" value="{{ $tax }}">
+            <input type="hidden" name="grand_total" value="{{ $grandTotal }}">
+
+            <div class="mb-3">
+                <label for="customer_name" class="form-label">Nama Pelanggan</label>
+                <input type="text" name="customer_name" class="form-control" id="customer_name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Jenis Kelamin</label><br>
+                <input type="radio" name="gender" value="Laki-laki" required> Laki-laki
+                <input type="radio" name="gender" value="Perempuan"> Perempuan
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Metode Pembayaran</label><br>
+                <input type="radio" name="payment_method" value="qris" required> QRIS<br>
+                <input type="radio" name="payment_method" value="bca"> Virtual Account BCA<br>
+                <input type="radio" name="payment_method" value="bri"> Virtual Account BRI
+            </div>
+
+            <button type="submit" class="btn btn-success">Bayar Sekarang</button>
     </form>
-</form>
-
 </div>
 </body>
 </html>

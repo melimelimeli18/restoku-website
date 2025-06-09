@@ -9,16 +9,16 @@ class Sale extends Model
     protected $fillable = [
         'customer_name',
         'sale_date',
-        'items',          // simpan json
+        'items',
         'total_price',
         'tax',
         'grand_total',
         'payment_method',
     ];
 
-    // Jika kamu ingin items bisa otomatis di-cast ke array/object
-    protected $casts = [
-        'items' => 'array',
-        'sale_date' => 'datetime',
-    ];
+    // Konversi `items` ke dalam array saat diambil
+    // protected $casts = [
+    //     'items' => 'array',  // Mengkonversi JSON ke array
+    //     'sale_date' => 'datetime',
+    // ];
 }

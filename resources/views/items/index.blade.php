@@ -10,6 +10,8 @@
 <div class="container mt-4">
     <h2>Daftar Menu</h2>
     <a href="{{ route('items.create') }}" class="btn btn-primary mb-3">Tambah Menu</a>
+    <a href="{{ route('app.home') }}" class="btn btn-secondary mb-3">Home</a>
+
 
     @if($items->isEmpty())
         <div class="alert alert-info">Menu masih kosong.</div>
@@ -29,9 +31,16 @@
                             <h5 class="card-title">{{ $item->name }}</h5>
                             <p class="card-text">
                                 Harga: Rp {{ number_format($item->price, 0, ',', '.') }}<br />
-                                Cost: Rp {{ number_format($item->cost, 0, ',', '.') }}<br />
-                                Barcode: {{ $item->barcode }}
+                                Stock: {{ number_format($item->stock, 0, ',', '.') }}<br />
                             </p>
+
+                            <a href="{{ route('items.edit', $item->id) }}" class="btn btn-primary btn-sm">Edit</a>
+
+                            <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
                         </div>
                     </div>
                 </div>

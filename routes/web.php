@@ -3,106 +3,73 @@
 // use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\ItemController;
 use App\Models\Item;
-
-
-
-//AUTH
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::get('/signup', function () {
-    return view('auth.signup');
-})->name('signup');
-
-Route::post('/signup', [AuthController::class, 'signup']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\SaleController;
 
 //HALAMAN UTAMA
 Route::get('/', function () {
     return view('app');
-})->name('app.home')->middleware('auth');
-// })->name('app.home');
+// })->name('app.home')->middleware('auth');
+})->name('app.home');
 
-//halaman sale kasir
-Route::get('/sale', function () {
-    return view('sale.index');
-})->name('sale.index');
 
-    // Halaman checkout setelah pilih item
-    Route::get('/sale/checkout', function () {
-        return view('sale.checkout');
-    })->name('sale.checkout');
-    
-    //process
-    Route::post('/sale/checkout/process', function (Request $request) {
-        \Log::info('Data request:', $request->all());
-        $paymentMethod = $request->payment_method;
 
-        if ($paymentMethod === 'qris') {
-            return redirect()->route('sale.payment.qris');
-        } elseif ($paymentMethod === 'bca' || $paymentMethod === 'bri') {
-            return redirect()->route('sale.payment.va', ['bank' => $paymentMethod]);
-        }
+//SALEEEE
+Route::get('/sale', [SaleController::class, 'index'])->name('sale.index'); // Halaman pilih item (index)
 
-        return redirect()->route('sale.checkout'); // fallback
-    })->name('sale.checkout.process');
+// Route::post('/sale/checkout', [SaleController::class, 'checkoutProcess'])->name('sale.checkout');
+// Route::post('checkout-process', [SaleController::class, 'checkoutProcess'])->name('checkout.process');
+// Route::get('/sale/checkout', [SaleController::class, 'checkoutPage'])->name('sale.checkout');
+// web.php
 
-    Route::get('/sale/payment/qris', function () {
-        return view('sale.payment_qris');
-    })->name('sale.payment.qris');
+Route::post('/sale/checkout', [SaleController::class, 'checkoutProcess'])->name('sale.checkout');  // Proses checkout, simpan data di session
+Route::get('/sale/checkout', [SaleController::class, 'showCheckoutPage'])->name('sale.checkout.page');  // Menampilkan halaman checkout dengan data dari session
+Route::post('/sale/submit', [SaleController::class, 'submit'])->name('sale.submit');
 
-    Route::get('/sale/payment/va/{bank}', function ($bank) {
-        return view('sale.payment_va', ['bank' => $bank]);
-    })->name('sale.payment.va');
 
-    Route::get('/sale/payment/success', function () {
-        return view('sale.payment_success');
-    })->name('sale.payment.success');
+Route::get('/sale/payment/qris', function () {
+    return view('sale.payment_qris');
+})->name('sale.payment.qris');
 
-//halaman riwayat transaksi
+Route::get('/sale/payment/va/{bank}', function ($bank) {
+    return view('sale.payment_va', ['bank' => $bank]);
+})->name('sale.payment.va');
+
+Route::get('/sale/payment/success', function () {
+    return view('sale.payment_success');
+})->name('sale.payment.success');
+
+
+//RIWAYATTT TRANSAKSIII
 Route::get('/transactions', function () {
     return view('transactions.index');
 })->name('transactions.index');
 
 
 //halaman item
-Route::get('/items', function () {
-    $items = Item::all();  // Ambil semua data dari database
-    return view('items.index', compact('items'));
-})->name('items.index');
+// Route::get('/items', function () {
+//     $items = Item::all();  // Ambil semua data dari database
+//     return view('items.index', compact('items'));
+// })->name('items.index');
 
+Route::get('/items', [ItemController::class, 'itemsIndex'])->name('items.index');
     //form tambah menu
     Route::get('/create', function () {
         return view('items.create');
     })->name('items.create');
 
-    //simpan menu baru
-    Route::post('/items', function (Request $request) {
-        $request->validate([
-            'photo' => 'required|image|max:2048',
-            'name' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
-            'cost' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-        ]);
+//    // Rute untuk menampilkan form create
+//     Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
 
-        $photoPath = $request->file('photo')->store('items', 'public');
+    // Rute untuk menyimpan item
+    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
 
-        Item::create([
-            'photo' => $photoPath,
-            'name' => $request->name,
-            'price' => $request->price,
-            'cost' => $request->cost,
-            'stock' => $request->stock,
-        ]);
+    //form edit
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
 
-        return redirect()->route('items.index')->with('success', 'Menu berhasil ditambahkan!');
-    })->name('items.store');
+    // Update data item
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+
+    // Delete item
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
