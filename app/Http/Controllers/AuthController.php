@@ -13,14 +13,12 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         try{
-
-            // dd($request->all());
     
             \Log::info('Signup request received', $request->all());
             // Validasi form
             $request->validate([
                 'restaurant_name' => 'required|string|max:255',
-                'restaurant_number' => 'required|numeric',
+                'restaurant_number' => 'required|numeric|unique:users,restaurant_number',
                 'restaurant_address' => 'required|string',
                 'restaurant_photo' => 'nullable|image|max:2048', // Validasi foto
                 'email' => 'required|email|unique:users,email',
@@ -45,7 +43,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password,  // Meng-hash password
+                'password' => bcrypt($request->password),  // Meng-hash password
                 'restaurant_name' => $request->restaurant_name,
                 'restaurant_number' => $restaurantNumber,
                 'restaurant_address' => $request->restaurant_address,
@@ -63,53 +61,6 @@ class AuthController extends Controller
         
     } 
 
-
-    // Login pengguna
-    // public function login(Request $request)
-    // {
-    //     try {
-    //         // Validasi form login
-    //         $request->validate([
-    //             'email' => 'required|email',
-    //             'password' => 'required|min:8',
-    //         ]);
-
-    //         \Log::info('Login attempt', $request->only('email', 'password'));
-
-    //         // Cek user apakah ada di database
-    //         $user = User::where('email', $request->email)->first();
-
-    //         if (!$user) {
-    //             \Log::info('User not found: ' . $request->email);
-    //             return back()->withErrors(['email' => 'User not found']);
-    //         }
-
-    //         $passwordCorrect = Hash::check(trim($request->password), $user->password);
-    //         if ($passwordCorrect) {
-    //             \Log::info('Password correct for: ' . $request->email);
-    //             // Proses login
-    //             Auth::login($user);
-
-    //             // Cek status session
-    //             if (Auth::check()) {
-    //                 \Log::info('Session created successfully for: ', ['user' => Auth::user()]);
-    //             } else {
-    //                 \Log::info('Failed to create session for: ', ['email' => $request->email]);
-    //             }
-
-    //             return redirect()->route('app.home');
-    //         } else {
-    //             \Log::info('Password mismatch for: ' . $request->email);
-    //             return back()->withErrors(['email' => 'Invalid credentials']);
-    //         }
-
-    //     } catch (\Exception $e) {
-    //         // Tangkap error dan tampilkan pesan
-    //         \Log::error('Login failed: ' . $e->getMessage());
-    //         dd('Error during login: ' . $e->getMessage());  // Menampilkan pesan error di browser
-    //     }
-    // }
-
     public function login(Request $request)
     {
         $user = User::where('email', $request->input('email'))->first();
@@ -119,7 +70,7 @@ class AuthController extends Controller
         if ($user) {
             \Log::info('Stored password hash: ', ['password' => $user->password]);
 
-            $passwordCorrect = Hash::check($request->input('password'), $user->password);
+            $passwordCorrect = Hash::check(trim($request->password), $user->password);
             \Log::info('Password verification result for ' . $request->email . ': ', ['result' => $passwordCorrect]);
 
             if ($passwordCorrect) {
@@ -129,7 +80,7 @@ class AuthController extends Controller
                 return redirect()->route('app.home');
             } else {
                 \Log::info('Password mismatch for: ' . $request->email);
-                return back()->withErrors(['email' => 'Invalid credentials']);
+                return back()->withErrors(['email' => 'Password mismatch']);
             }
         }
 
@@ -150,8 +101,3 @@ class AuthController extends Controller
 
 }
 
-// $passwordCorrect = '$2y$12$4/LcGqEytYUlcjvklKa2vO7GtJnOAbPFx63IPaFim4EUV9SpPjkBS';
-$user = 'melisaolivia18@gmail.com';
-$passwordCorrect = $user->password;
-echo($passwordCorrect);
-        
