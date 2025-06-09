@@ -14,6 +14,7 @@ class AuthController extends Controller
     {
         try{
     
+    
             \Log::info('Signup request received', $request->all());
             // Validasi form
             $request->validate([
