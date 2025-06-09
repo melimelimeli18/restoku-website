@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <h2>Halaman Checkout</h2>
 
-    <form action="{{ route('sale.checkout.process') }}" method="POST">
+    <form action="{{ route('sale.checkout') }}" method="POST">
         @csrf
 
         <h4>Detail Item</h4>
@@ -28,6 +28,7 @@
                     <tr>
                         <td>{{ $item['name'] }}</td>
                         <td>Rp {{ number_format($item['price'],0,',','.') }}</td>
+                        {{-- <td>{{ $item['quantity'] }}</td> --}}
                         <td>{{ $item['quantity'] }}</td>
                         <td>Rp {{ number_format($item['subtotal'],0,',','.') }}</td>
 

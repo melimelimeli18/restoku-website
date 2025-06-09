@@ -47,21 +47,21 @@
 <div class="container mt-4">
     <h2>Halaman Penjualan</h2>
 
-    {{-- <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}"> --}}
-    <form id="transactionForm" method="POST" action="{{ route('sale.checkout.process') }}">
-        @csrf
+   <form id="transactionForm" method="POST" action="{{ route('checkout.process') }}">
+   {{-- <form id="transactionForm" method="POST" action="{{ route('sale.checkout') }}"> --}}
+    @csrf
         <div class="row g-3">
             @foreach($items as $item)
             <div class="col-md-4">
                 <div class="card selectable-card"
-                     data-id="{{ $item->id }}"
-                     data-name="{{ $item->name }}"
-                     data-price="{{ $item->price }}">
+                    data-id="{{ $item->id }}"
+                    data-name="{{ $item->name }}"
+                    data-price="{{ $item->price }}">
                     @if($item->photo)
                         <img src="{{ asset('storage/' . $item->photo) }}" alt="{{ $item->name }}" class="item-img me-3" />
                     @else
                         <div class="bg-secondary text-white d-flex align-items-center justify-content-center me-3"
-                             style="width:60px; height:60px; border-radius:0.5rem;">
+                            style="width:60px; height:60px; border-radius:0.5rem;">
                             No Photo
                         </div>
                     @endif
@@ -233,63 +233,16 @@
 
         modal.hide();
     });
-
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-   
-    // fetch('/sale/checkout', {
-    fetch('/sale/checkout.process', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken  // CSRF Token di header
-        },
-        // body: JSON.stringify({
-        //     items: selectedItems,
-        //     total_price: totalPrice
-        // })
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => console.log('Transaction Success', data))
-    .catch(error => console.error('Error:', error));
-
-    // Ketika proses transaksi dimulai
-    // document.getElementById('btn-process').addEventListener('click', () => {
-    //     const form = document.createElement('form');
-    //     form.method = 'POST';
-    //     form.action = '{{ route("sale.checkout.process") }}';
-
-    //     // Tambahkan CSRF token ke dalam form
-    //     // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    //     // form.appendChild(csrfTokenInput(csrfToken));
-
-    //     // Tambahkan input item id dan jumlah
-    //     for (const [id, qty] of Object.entries(selectedItems)) {
-    //         // Item ID
-    //         const inputId = document.createElement('input');
-    //         inputId.type = 'hidden';
-    //         inputId.name = 'items[]';  // Menjaga array dengan nama yang sesuai
-    //         inputId.value = id;
-    //         form.appendChild(inputId);
-
-    //         // Quantity
-    //         const inputQty = document.createElement('input');
-    //         inputQty.type = 'hidden';
-    //         // inputQty.name = 'quantity[]';  // Menjaga array dengan nama yang sesuai
-    //         inputQty.name = 'quantity[${id}]';  // Menjaga array dengan nama yang sesuai
-    //         inputQty.value = qty;
-    //         form.appendChild(inputQty);
-    //     }
-
-    //     document.body.appendChild(form);
-    //     form.submit();
-    // });
     
-    // Mengirim data items dan quantity secara dinamis melalui form
+        
+
+const btnProcess = document.getElementById('btn-process');
+
 btnProcess.addEventListener('click', () => {
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = '{{ route("sale.checkout.process") }}';
+    // form.action = '{{ route("sale.checkout") }}';
+    form.action = '{{ route("checkout.process") }}';
 
     // Tambahkan CSRF token ke dalam form
     const csrfTokenInput = document.createElement('input');
