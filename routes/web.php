@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Item;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\TransactionController;
 
 
 
@@ -69,3 +70,7 @@ Route::get('/items', [ItemController::class, 'itemsIndex'])->name('items.index')
 
     // Delete item
     Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
+
+
+//RIWAYATT TRANSAKSI
+Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
