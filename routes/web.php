@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController; 
 
 
 
@@ -74,3 +75,7 @@ Route::get('/items', [ItemController::class, 'itemsIndex'])->name('items.index')
 
 //RIWAYATT TRANSAKSI
 Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+
+//EDIT PROFILE
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
