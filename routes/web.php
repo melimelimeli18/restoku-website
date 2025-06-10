@@ -40,19 +40,11 @@ Route::post('/sale/checkout', [SaleController::class, 'checkoutProcess'])->name(
 Route::get('/sale/checkout', [SaleController::class, 'showCheckoutPage'])->name('sale.checkout.page');  // Menampilkan halaman checkout dengan data dari session
 Route::post('/sale/submit', [SaleController::class, 'submit'])->name('sale.submit');
 
-
-Route::get('/sale/payment/qris', function () {
-    return view('sale.payment_qris');
-})->name('sale.payment.qris');
-
-Route::get('/sale/payment/va/{bank}', function ($bank) {
-    return view('sale.payment_va', ['bank' => $bank]);
-})->name('sale.payment.va');
+Route::get('/sale/struk', [SaleController::class, 'generateReceipt'])->name('sale.struk');
 
 Route::get('/sale/payment/success', function () {
     return view('sale.payment_success');
 })->name('sale.payment.success');
-
 
 //RIWAYATTT TRANSAKSIII
 Route::get('/transactions', function () {

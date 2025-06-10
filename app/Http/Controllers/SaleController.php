@@ -71,43 +71,41 @@ $request->validate([
     return redirect()->route('sale.checkout');  // Redirect ke halaman checkout
 }
 
-    public function submit(Request $request)
-    {
-        // Ambil data checkout dari session
-        $checkoutData = session('checkout_data', []);
+public function submit(Request $request)
+{
+    // Ambil data checkout dari session
+    $checkoutData = session('checkout_data', []);
 
-        // Validasi data tambahan dari halaman checkout
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'payment_method' => 'required|string',
-        ]);
+    // Validasi data tambahan dari halaman checkout
+    $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'payment_method' => 'required|string',
+    ]);
 
-        // Gabungkan data checkout dari session dengan data tambahan dari halaman checkout
-        $allData = array_merge($checkoutData, $request->only(['customer_name', 'payment_method']));
+    // Gabungkan data checkout dari session dengan data tambahan dari halaman checkout
+    $allData = array_merge($checkoutData, $request->only(['customer_name', 'payment_method']));
 
-        // Tambahkan sale_date ke data
-        $allData['sale_date'] = now();  // Atur tanggal penjualan menjadi waktu saat ini
+    // Tambahkan sale_date ke data
+    $allData['sale_date'] = now();  // Atur tanggal penjualan menjadi waktu saat ini
 
-        // Format data items menjadi JSON jika perlu
-        $allData['items'] = json_encode($allData['itemsData']);  // Menyimpan items sebagai JSON, bisa diubah sesuai kebutuhan
+    // Format data items menjadi JSON jika perlu
+    $allData['items'] = json_encode($allData['itemsData']);  // Menyimpan items sebagai JSON
 
-        // Simpan data pesanan ke database
-        Sale::create([
-            'customer_name' => $allData['customer_name'],
-            'sale_date' => $allData['sale_date'],
-            'items' => $allData['items'],
-            'total_price' => $allData['totalPrice'],
-            'tax' => $allData['tax'],
-            'grand_total' => $allData['grandTotal'],
-            'payment_method' => $allData['payment_method'],
-        ]);
+    Sale::create([
+        'customer_name' => $allData['customer_name'],
+        'sale_date' => $allData['sale_date'],
+        'items' => $allData['items'],
+        'total_price' => $allData['totalPrice'],
+        'tax' => $allData['tax'],
+        'grand_total' => $allData['grandTotal'],
+        'payment_method' => $allData['payment_method'],
+    ]);
 
-        // Hapus data dari session setelah submit
-        session()->forget('checkout_data');
+    session()->forget('checkout_data');
+    return redirect()->route('sale.struk');
+}
 
-        // Redirect ke halaman sukses atau halaman lain
-        return redirect()->route('sale.payment.success')->with('message', 'Order submitted successfully!');
-    }
+
 
     public function showCheckoutPage()
     {
@@ -120,4 +118,29 @@ $request->validate([
             'grandTotal' => $checkoutData['grandTotal'] ?? 0
         ]);
     }
+
+public function generateReceipt()
+{
+    // Ambil data transaksi terakhir dari database
+    $sale = Sale::latest()->first();  // Mengambil transaksi terakhir yang disimpan
+
+    // Ambil informasi user (restoran) dari model User
+    $user = auth()->user();  // Ambil user yang sedang login
+
+    // Tampilkan halaman struk dengan data yang diperlukan
+    return view('sale.struk', [
+        'itemsData' => json_decode($sale->items, true), // Decode JSON ke array
+        'totalPrice' => $sale->total_price,
+        'tax' => $sale->tax,
+        'grandTotal' => $sale->grand_total,
+        'paymentMethod' => $sale->payment_method,
+        'customerName' => $sale->customer_name,
+        'restaurant_name' => $user->restaurant_name,
+        'restaurant_address' => $user->restaurant_address,
+        'restaurant_number' => $user->restaurant_number,
+        'name' => $user->name,  // Nama pelayan
+    ]);
+}
+
+
 }

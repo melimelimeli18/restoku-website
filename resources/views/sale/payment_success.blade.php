@@ -1,3 +1,14 @@
-<h2>Transaksi Berhasil!</h2>
-<p>Terima kasih, pesanan kamu telah berhasil diproses.</p>
-<a href="{{ route('app.home') }}" class="btn btn-success">Kembali ke Halaman Utama</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaksi Berhasil</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Terima Kasih atas Pembelian Anda!</h2>
+        <p>Transaksi Anda telah berhasil.</p>
+        <a href="{{ route('sale.index') }}"><button>Kembali ke Halaman Utama</button></a>
+    </div>
+</body>
+</html>
