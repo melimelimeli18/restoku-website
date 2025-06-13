@@ -110,7 +110,7 @@
         <!-- Logout Button at the Bottom -->
         <div class="footer">
             <form action="{{ route('logout') }}" method="POST">
-                @csrf
+                @csrf   
                 <button type="submit" class="btn btn-danger">Logout</button>
             </form>
         </div>

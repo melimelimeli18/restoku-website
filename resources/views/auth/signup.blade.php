@@ -45,10 +45,10 @@
             <textarea name="restaurant_address" id="restaurant_address" class="form-control" required></textarea>
         </div>
 
-        {{-- <div class="mb-3">
+        <div class="mb-3">
             <label for="restaurant_photo" class="form-label">Foto Resto</label>
             <input type="file" name="restaurant_photo" class="form-control" accept="image/*">
-        </div> --}}
+        </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
