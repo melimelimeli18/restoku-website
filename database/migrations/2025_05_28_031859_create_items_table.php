@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->string('name');
             $table->integer('price');
-            $table->integer('cost');
             $table->integer('stock')->default(0);
             $table->timestamps();
         });
