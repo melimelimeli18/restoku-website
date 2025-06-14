@@ -10,31 +10,24 @@
 <body>
 <div class="container mt-4">
     <h2>Riwayat Transaksi</h2> 
-    <a href="{{ route('app.home') }}" class="btn btn-secondary mb-3">Home</a>
     
-    {{-- Simulasi data --}}
-    <h5 class="mt-4">Senin, 27 Mei 2025</h5>
-
-    <div class="card mb-3" style="width: 100%;">
-        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-            <div><strong>Menu:</strong> Nasi Goreng</div>
-            <div><strong>Waktu:</strong> 12:00 27-05-2025</div>
-            <div><strong>Pembeli:</strong> Andi</div>
-            <div><strong>Harga:</strong> Rp25.000</div>
-        </div>
-    </div>
-
-    <div class="card mb-3" style="width: 100%;">
-        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-            <div><strong>Menu:</strong> Es Teh</div>
-            <div><strong>Waktu:</strong> 12:10 27-05-2025</div>
-            <div><strong>Pembeli:</strong> Andi</div>
-            <div><strong>Harga:</strong> Rp5.000</div>
-        </div>
-    </div>
+    <!-- Periksa apakah ada data transaksi -->
+    @if($sales->isEmpty())
+        <p>Tidak ada transaksi.</p>
+    @else
+        @foreach($sales as $sale)
+            <div class="card mb-3" style="width: 100%;">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                    <div><strong>Pembeli:</strong> {{ $sale->customer_name }}</div>
+                    <div><strong>Waktu:</strong> {{ $sale->sale_date }}</div>
+                    <div><strong>Harga:</strong> Rp{{ number_format($sale->grand_total, 0, ',', '.') }}</div>
+                    <div><strong>Metode Pembayaran:</strong> {{ ucfirst($sale->payment_method) }}</div>
+                </div>
+            </div>
+        @endforeach
+    @endif
 
     <a href="{{ route('app.home') }}" class="btn btn-primary mt-3">Kembali ke Beranda</a>
 </div>
 </body>
 </html>
-
