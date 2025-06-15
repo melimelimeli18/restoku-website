@@ -15,10 +15,4 @@ class Sale extends Model
         'grand_total',
         'payment_method',
     ];
-
-    // Konversi `items` ke dalam array saat diambil
-    // protected $casts = [
-    //     'items' => 'array',  // Mengkonversi JSON ke array
-    //     'sale_date' => 'datetime',
-    // ];
 }

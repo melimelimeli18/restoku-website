@@ -30,7 +30,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', function () {
     return view('app');
 })->name('app.home')->middleware('auth');
-// })->name('app.home');
 
 
 
