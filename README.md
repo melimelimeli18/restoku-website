@@ -23,12 +23,14 @@ Proyek ini dirancang untuk membantu pemilik restoran dalam mengelola menu, pesan
 
 ---
 ## 📂 Struktur Folder Penting
+```plaintext
 app/            -> Logika aplikasi (Models, Controllers)
 resources/views -> File Blade templates
 routes/         -> Definisi route web & API
 public/         -> Asset publik (CSS, JS, Images)
 database/       -> Migrations & Seeders
+```
 
 ## 👩‍💻 Kontributor
-Melisa Olivia
-Agatha Florencia Immanuel
+1. Melisa Olivia
+2. Agatha Florencia Immanuel
